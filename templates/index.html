@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Prediction</title>
+    <style>
+        body {
+            background-color: rgba(212, 156, 97, 0.44); /* Semi-transparent white background */
+            background-size: cover;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh; /* Make the page full height */
+            margin: 0; /* Remove default margin */
+        }
+        form {
+            width: 300px;
+            background-color: rgba(88, 172, 32, 0.8); /* Semi-transparent white background */
+            padding: 20px;
+            border-radius: 10px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: calc(100% - 20px); /* Take up the full width, minus padding */
+            margin-bottom: 10px;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            width: 100%; /* Take up the full width */
+        }
+        #prediction {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sales Prediction</h1>
+    <form id="predictionForm" action="/predict" method="post">
+        <label for="tv">TV:</label>
+        <input type="text" id="tv" name="tv"><br>
+        <label for="radio">Radio:</label>
+        <input type="text" id="radio" name="radio"><br>
+        <label for="newspaper">Newspaper:</label>
+        <input type="text" id="newspaper" name="newspaper"><br>
+        <input type="submit" value="Predict">
+    </form>
+    <div id="prediction"></div>
+
+    <script>
+        // Function to handle form submission
+        document.getElementById('predictionForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Fetch form values
+            var tv = document.getElementById('tv').value;
+            var radio = document.getElementById('radio').value;
+            var newspaper = document.getElementById('newspaper').value;
+
+            // Make POST request to Flask server
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'tv=' + tv + '&radio=' + radio + '&newspaper=' + newspaper
+            })
+            .then(response => response.json()) // Parse response as JSON
+            .then(data => {
+                // Display predicted sales on the webpage
+                document.getElementById('prediction').innerHTML = 'Predicted Sales: ' + data.sales_prediction;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
